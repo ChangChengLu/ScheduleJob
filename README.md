@@ -1,2 +1,2 @@
-# SchedualJob
-定时分布式异步任务处理框架。
+# ScheduleJob
+分布式定时异步任务处理框架。
