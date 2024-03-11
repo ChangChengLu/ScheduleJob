@@ -6,3 +6,7 @@
 /schedule-common/target/
 /schedule-timer/target/
 /logs/
+/schedule-auth/schedule-auth.iml
+/schedule-gateway/schedule-gateway.iml
+/schedule-auth/target/
+/schedule-gateway/target/

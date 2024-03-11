@@ -12,7 +12,6 @@ import com.cclu.timer.service.support.ScheduleTimerService;
 import com.cclu.timer.utils.TimerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronExpression;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
