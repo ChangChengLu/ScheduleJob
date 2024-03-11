@@ -5,6 +5,8 @@ import com.cclu.timer.enums.TaskStatus;
 import com.cclu.timer.mapper.TaskMapper;
 import com.cclu.timer.model.TaskModel;
 import com.cclu.timer.redis.TaskCache;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
@@ -14,6 +16,12 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * @author ChangCheng Lu
+ * @description 触发器任务
+ */
+@Getter
+@Setter
 @Slf4j
 public class TriggerTimerTask extends TimerTask {
 
@@ -26,6 +34,7 @@ public class TriggerTimerTask extends TimerTask {
     TaskMapper taskMapper;
 
     private CountDownLatch latch ;
+
     private Long count = 0L;
 
     private Date startTime;
@@ -49,14 +58,14 @@ public class TriggerTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        Date tStart = new Date(startTime.getTime() + count*triggerAppConf.getZrangeGapSeconds()*1000L);
+        Date tStart = new Date(startTime.getTime() + count * triggerAppConf.getZrangeGapSeconds() * 1000L);
         if(tStart.compareTo(endTime) > 0){
             latch.countDown();
             return;
         }
         // 处理任务
         try{
-            handleBatch(tStart, new Date(tStart.getTime() + triggerAppConf.getZrangeGapSeconds()*1000L));
+            handleBatch(tStart, new Date(tStart.getTime() + triggerAppConf.getZrangeGapSeconds() * 1000L));
         }catch (Exception e){
             log.error("handleBatch Error. minuteBucketKey"+minuteBucketKey+",tStartTime:"+startTime+",e:",e);
         }
@@ -64,8 +73,7 @@ public class TriggerTimerTask extends TimerTask {
     }
 
     private void handleBatch(Date start, Date end){
-        //
-        List<TaskModel> tasks = getTasksByTime(start,end);
+        List<TaskModel> tasks = getTasksByTime(start, end);
         if (CollectionUtils.isEmpty(tasks)){
             return;
         }
@@ -76,7 +84,7 @@ public class TriggerTimerTask extends TimerTask {
                 }
                 triggerPoolTask.runExecutor(task);
             }catch (Exception e){
-                log.error("executor run task error,task"+task.toString());
+                log.error("executor run task error,task" + task);
             }
         }
     }
@@ -86,10 +94,10 @@ public class TriggerTimerTask extends TimerTask {
 
         // 先走缓存
         try{
-            tasks= taskCache.getTasksFromCache(minuteBucketKey,start.getTime(),end.getTime());
+            tasks= taskCache.getTasksFromCache(minuteBucketKey, start.getTime(), end.getTime());
         }catch (Exception e){
             log.error("getTasksFromCache error: " ,e);
-            // 缓存miss,走数据库
+            // 缓存miss, 走数据库
             try{
                 tasks = taskMapper.getTasksByTimeRange(start.getTime(),end.getTime()-1, TaskStatus.NotRun.getStatus());
             }catch (Exception e1){

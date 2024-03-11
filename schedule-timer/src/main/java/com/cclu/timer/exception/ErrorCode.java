@@ -1,17 +1,18 @@
 package com.cclu.timer.exception;
 
 /**
- * 自定义错误码
+ * @author ChangCheng Lu
+ * @description 自定义错误码
  */
 public enum ErrorCode {
 
+    /**
+     * 错误码
+     */
     SUCCESS(0, "ok"),
     UNKNOWN_ERROR(90001, "未知异常"),
     SYSTEM_ERROR(90002, "系统内部异常"),
-    PARAMS_ERROR(90003, "请求参数错误"),
-
-    ;
-
+    PARAMS_ERROR(90003, "请求参数错误");
 
     /**
      * 状态码

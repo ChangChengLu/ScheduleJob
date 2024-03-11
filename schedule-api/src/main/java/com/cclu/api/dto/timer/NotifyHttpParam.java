@@ -2,7 +2,12 @@ package com.cclu.api.dto.timer;
 
 import java.util.Map;
 
-public class NotifyHTTPParam {
+/**
+ * @author ChangCheng Lu
+ * @description 回调上下文
+ */
+public class NotifyHttpParam {
+
     private String method;
     private String url;
     private Map<String,String> header;

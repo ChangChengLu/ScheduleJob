@@ -1,4 +1,4 @@
-package com.cclu.timer.service.impl;
+package com.cclu.timer.service.support.impl;
 
 import com.cclu.api.dto.timer.TimerDTO;
 import com.cclu.common.redis.ReentrantDistributeLock;
@@ -8,7 +8,7 @@ import com.cclu.timer.exception.ErrorCode;
 import com.cclu.timer.manager.MigratorManager;
 import com.cclu.timer.mapper.TimerMapper;
 import com.cclu.timer.model.TimerModel;
-import com.cclu.timer.service.ScheduleTimerService;
+import com.cclu.timer.service.support.ScheduleTimerService;
 import com.cclu.timer.utils.TimerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronExpression;
@@ -16,34 +16,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
+/**
+ * @author ChangCheng Lu
+ */
 @Service
 @Slf4j
 public class ScheduleTimerServiceImpl implements ScheduleTimerService {
 
-    @Autowired
+    @Resource
     private TimerMapper timerMapper;
 
-    @Autowired
+    @Resource
     ReentrantDistributeLock reentrantDistributeLock;
 
-    @Autowired
+    @Resource
     MigratorManager migratorManager;
 
-    private static final int  defaultGapSeconds= 3;
+    private static final int DEFAULT_GAP_SECONDS = 3;
 
     @Override
     public Long createTimer(TimerDTO timerDTO) {
-//        String lockToken = TimerUtils.GetTokenStr();
-////        // 只加锁不解锁，只有超时解锁；超时时间控制频率；
-////        boolean ok = reentrantDistributeLock.lock(
-////                TimerUtils.GetCreateLockKey(timerDTO.getApp()),
-////                lockToken,
-////                defaultGapSeconds);
-////        if(!ok){
-////            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"创建/删除操作过于频繁，请稍后再试！");
-////        }
+        String lockToken = TimerUtils.getTokenStr();
+        // 只加锁不解锁，只有超时解锁；超时时间控制频率；
+        boolean ok = reentrantDistributeLock.lock(
+                TimerUtils.getCreateLockKey(timerDTO.getApp()),
+                lockToken,
+                DEFAULT_GAP_SECONDS);
+        if(!ok){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"创建/删除操作过于频繁，请稍后再试！");
+        }
 
         boolean isValidCron = CronExpression.isValidExpression(timerDTO.getCron());
         if(!isValidCron){
@@ -60,11 +64,11 @@ public class ScheduleTimerServiceImpl implements ScheduleTimerService {
 
     @Override
     public void deleteTimer(String app, long id) {
-        String lockToken = TimerUtils.GetTokenStr();
+        String lockToken = TimerUtils.getTokenStr();
         boolean ok = reentrantDistributeLock.lock(
-                TimerUtils.GetCreateLockKey(app),
+                TimerUtils.getCreateLockKey(app),
                 lockToken,
-                defaultGapSeconds);
+                DEFAULT_GAP_SECONDS);
         if(!ok){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,"创建/删除操作过于频繁，请稍后再试！");
         }
@@ -84,17 +88,16 @@ public class ScheduleTimerServiceImpl implements ScheduleTimerService {
     @Override
     public TimerDTO getTimer(String app, long id) {
         TimerModel timerModel  = timerMapper.getTimerById(id);
-        TimerDTO timerDTO = TimerModel.objToVo(timerModel);
-        return timerDTO;
+        return TimerModel.objToVo(timerModel);
     }
 
     @Override
     public void enableTimer(String app, long id) {
-        String lockToken = TimerUtils.GetTokenStr();
+        String lockToken = TimerUtils.getTokenStr();
         boolean ok = reentrantDistributeLock.lock(
-                TimerUtils.GetEnableLockKey(app),
+                TimerUtils.getEnableLockKey(app),
                 lockToken,
-                defaultGapSeconds);
+                DEFAULT_GAP_SECONDS);
         if(!ok){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,"激活/去激活操作过于频繁，请稍后再试！");
         }
@@ -125,11 +128,11 @@ public class ScheduleTimerServiceImpl implements ScheduleTimerService {
 
     @Override
     public void unEnableTimer(String app, long id) {
-        String lockToken = TimerUtils.GetTokenStr();
+        String lockToken = TimerUtils.getTokenStr();
         boolean ok = reentrantDistributeLock.lock(
-                TimerUtils.GetEnableLockKey(app),
+                TimerUtils.getEnableLockKey(app),
                 lockToken,
-                defaultGapSeconds);
+                DEFAULT_GAP_SECONDS);
         if(!ok){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,"激活/去激活操作过于频繁，请稍后再试！");
         }

@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
 /**
- * 请求日志拦截器
- *
- **/
+ * @author ChangCheng Lu
+ * @description 请求日志拦截器
+ */
 @Aspect
 @Component
 @Slf4j
@@ -26,7 +26,7 @@ public class LogInterceptorA {
     /**
      * 执行拦截
      */
-    @Around("execution(* com.cclu.xtimer.feign.*.*(..))")
+    @Around("execution(* com.cclu.timer.feign.*.*(..))")
     public Object doInterceptor(ProceedingJoinPoint point) throws Throwable {
         // 计时
         StopWatch stopWatch = new StopWatch();

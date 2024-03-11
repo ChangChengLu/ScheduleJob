@@ -1,6 +1,6 @@
 package com.cclu.timer.service.executor;
 
-import com.cclu.api.dto.timer.NotifyHTTPParam;
+import com.cclu.api.dto.timer.NotifyHttpParam;
 import com.cclu.api.dto.timer.TimerDTO;
 import com.cclu.timer.enums.TaskStatus;
 import com.cclu.timer.enums.TimerStatus;
@@ -18,39 +18,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author ChangCheng Lu
+ * @description 执行器
+ */
 @Component
 @Slf4j
 public class ExecutorWorker {
 
-    @Autowired
+    @Resource
     TaskMapper taskMapper;
 
-    @Autowired
+    @Resource
     TimerMapper timerMapper;
 
-    public void work(String timerIDUnixKey){
-
-        List<Long> longSet = TimerUtils.SplitTimerIDUnix(timerIDUnixKey);
+    public void work(String timerIdUnixKey){
+        List<Long> longSet = TimerUtils.splitTimerIdUnix(timerIdUnixKey);
         if(longSet.size() != 2){
-            log.error("splitTimerIDUnix 错误, timerIDUnix:"+timerIDUnixKey);
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"splitTimerIDUnix 错误, timerIDUnix:"+timerIDUnixKey);
+            log.error("splitTimerIDUnix 错误, timerIDUnix:"+timerIdUnixKey);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"splitTimerIDUnix 错误, timerIDUnix:"+timerIdUnixKey);
         }
         Long timerId = longSet.get(0);
         Long unix = longSet.get(1);
-        TaskModel task = taskMapper.getTasksByTimerIdUnix(timerId,unix);
+        TaskModel task = taskMapper.getTasksByTimerIdUnix(timerId, unix);
         if(task.getStatus() != TaskStatus.NotRun.getStatus()){
-            log.warn("重复执行任务： timerId"+timerId+",runtimer:"+unix);
+            log.warn("重复执行任务timerId: " + timerId + ", runtime:"+unix);
             return;
         }
 
         // 执行回调
-        executeAndPostProcess(task,timerId,unix);
+        executeAndPostProcess(task, timerId, unix);
     }
 
-    private void executeAndPostProcess(TaskModel taskModel,Long timerId, Long unix){
+    private void executeAndPostProcess(TaskModel taskModel, Long timerId, Long unix){
         TimerModel timerModel = timerMapper.getTimerById(timerId);
         if(timerModel == null){
             log.error("执行回调错误，找不到对应的Timer。 timerId"+timerId);
@@ -63,7 +67,7 @@ public class ExecutorWorker {
         }
 
         // 触发时间的误差误差时间
-        int gapTime = (int) (new Date().getTime() - taskModel.getRunTimer());
+        int gapTime = (int) (System.currentTimeMillis() - taskModel.getRunTimer());
         taskModel.setCostTime(gapTime);
 
         // 执行http回调，通知业务放
@@ -91,17 +95,16 @@ public class ExecutorWorker {
 
     private ResponseEntity<String> executeTimerCallBack(TimerModel timerModel){
         TimerDTO timerDTO = TimerModel.objToVo(timerModel);
-        NotifyHTTPParam httpParam = timerDTO.getNotifyHTTPParam();
+        NotifyHttpParam httpParam = timerDTO.getNotifyHttpParam();
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> resp = null;
         switch (httpParam.getMethod()){
             case "POST":
-                resp = restTemplate.postForEntity(httpParam.getUrl(), httpParam.getBody(),String.class);
+                resp = restTemplate.postForEntity(httpParam.getUrl(), httpParam.getBody(), String.class);
             default:
                 log.error("不支持的httpMethod");
                 break;
         }
-        StringBuffer sb = new StringBuffer();
         HttpStatus statusCode = resp.getStatusCode();
         if (!statusCode.is2xxSuccessful()){
             log.error("http 回调失败："+resp);

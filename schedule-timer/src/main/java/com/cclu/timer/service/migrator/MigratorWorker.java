@@ -8,44 +8,51 @@ import com.cclu.timer.mapper.TimerMapper;
 import com.cclu.timer.model.TimerModel;
 import com.cclu.timer.utils.TimerUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author ChangCheng Lu
+ * @description 封装为Migrator组件
+ */
 @Component
 @Slf4j
 public class MigratorWorker {
 
-    @Autowired
+    @Resource
     TimerMapper timerMapper;
 
-    @Autowired
+    @Resource
     MigratorAppConf migratorAppConf;
 
-    @Autowired
+    @Resource
     MigratorManager migratorManager;
 
-    @Autowired
+    @Resource
     ReentrantDistributeLock reentrantDistributeLock;
 
-    @Scheduled(fixedRate = 10*1000) // 60*60*1000 一小时执行一次
+    /**
+     * 60 * 60 * 1000 一小时执行一次
+     */
+    @Scheduled(fixedRate = 10 * 1000)
     public void work() {
         log.info("开始迁移时间：" + LocalDateTime.now());
         Date startHour = getStartHour(new Date());
-        String lockToken = TimerUtils.GetTokenStr();
+        String lockToken = TimerUtils.getTokenStr();
         boolean ok = reentrantDistributeLock.lock(
-                TimerUtils.GetMigratorLockKey(startHour),
+                TimerUtils.getMigratorLockKey(startHour),
                 lockToken,
-                60L*migratorAppConf.getMigrateTryLockMinutes());
+                60L * migratorAppConf.getMigrateTryLockMinutes());
         if(!ok){
-            log.warn("migrator get lock failed！"+TimerUtils.GetMigratorLockKey(startHour));
+            log.warn("migrator get lock failed！"+TimerUtils.getMigratorLockKey(startHour));
             return;
         }
 
@@ -54,9 +61,9 @@ public class MigratorWorker {
 
         // 更新分布式锁过期时间
         reentrantDistributeLock.expireLock(
-                TimerUtils.GetMigratorLockKey(startHour),
+                TimerUtils.getMigratorLockKey(startHour),
                 lockToken,
-                60L*migratorAppConf.getMigrateSuccessExpireMinutes());
+                60L * migratorAppConf.getMigrateSuccessExpireMinutes());
     }
 
     private Date getStartHour(Date date){
@@ -70,13 +77,13 @@ public class MigratorWorker {
 
 
     private void migrate(){
-        List<TimerModel> timers= timerMapper.getTimersByStatus(TimerStatus.Enable.getStatus());
+        List<TimerModel> timers = timerMapper.getTimersByStatus(TimerStatus.Enable.getStatus());
         if(CollectionUtils.isEmpty(timers)){
             log.info("migrate timers is empty");
             return;
         }
 
-        for (TimerModel timerModel:timers) {
+        for (TimerModel timerModel : timers) {
             migratorManager.migrateTimer(timerModel);
         }
     }

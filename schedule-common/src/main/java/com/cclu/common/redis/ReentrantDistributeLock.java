@@ -6,24 +6,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 
+/**
+ * @author ChangCheng Lu
+ * @description 分布式锁
+ */
 @Component
 @Slf4j
 public class ReentrantDistributeLock {
 
-    @Autowired
+    @Resource
     private RedisBase redisBase;
 
     public boolean lock(String key, String token, long expireSeconds){
         // 首先查询锁是否属于自己
         Object res = redisBase.get(key);
-        if(res != null && StringUtils.equals(res.toString(),token)){
+        if(res != null && StringUtils.equals(res.toString(), token)){
             return true;
         }
 
         // 不属于自己，尝试获取锁
-        boolean ok = redisBase.setnx(key,token,expireSeconds);
+        boolean ok = redisBase.setnx(key, token, expireSeconds);
         if(!ok){
             log.info("lock is acquired by others");
         }

@@ -11,6 +11,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author ChangCheng Lu
+ */
 public class JwtUtil {
 
     private static final String SECRET = "JOE38R39GNGRTU49Y534YNIGEYR534YNDEUR7964GEUR735";

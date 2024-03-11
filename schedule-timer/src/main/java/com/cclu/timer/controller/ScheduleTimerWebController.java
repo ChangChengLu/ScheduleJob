@@ -2,14 +2,17 @@ package com.cclu.timer.controller;
 
 import com.cclu.api.dto.timer.TimerDTO;
 import com.cclu.common.model.ResponseEntity;
-import com.cclu.timer.service.ScheduleTimerService;
+import com.cclu.timer.service.support.ScheduleTimerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
-
+/**
+ * @author ChangCheng Lu
+ * @description 对外提供定时器创建和激活的接口
+ */
 @RestController
 @RequestMapping("/timer")
 @Slf4j
@@ -31,4 +34,5 @@ public class ScheduleTimerWebController {
         scheduleTimerService.enableTimer(app,timerId);
         return ResponseEntity.ok("ok");
     }
+
 }

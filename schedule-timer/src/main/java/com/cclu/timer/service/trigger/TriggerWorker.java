@@ -4,41 +4,44 @@ import com.cclu.timer.common.conf.TriggerAppConf;
 import com.cclu.timer.mapper.TaskMapper;
 import com.cclu.timer.redis.TaskCache;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * @author ChangCheng Lu
+ * @description 触发器
+ */
 @Component
 @Slf4j
 public class TriggerWorker {
 
-    @Autowired
+    @Resource
     TriggerAppConf triggerAppConf;
 
-    @Autowired
+    @Resource
     TriggerPoolTask triggerPoolTask;
 
-    @Autowired
+    @Resource
     TaskCache taskCache;
 
-    @Autowired
+    @Resource
     TaskMapper taskMapper;
 
     public void work(String minuteBucketKey){
-        // 进行为时一分钟的zrange
+        // 获取 1 分钟范围zrange切片
         Date startTime = getStartMinute(minuteBucketKey);
         Date endTime = new Date(startTime.getTime() + 60000);
 
         CountDownLatch latch = new CountDownLatch(1);
         Timer timer = new Timer("Timer");
-        TriggerTimerTask task = new TriggerTimerTask(
-                triggerAppConf,triggerPoolTask,taskCache,taskMapper,latch,startTime,endTime,minuteBucketKey);
-        timer.scheduleAtFixedRate(task, 0L, triggerAppConf.getZrangeGapSeconds()*1000L);
+        TriggerTimerTask task = new TriggerTimerTask(triggerAppConf, triggerPoolTask, taskCache, taskMapper, latch, startTime, endTime, minuteBucketKey);
+        timer.scheduleAtFixedRate(task, 0L, triggerAppConf.getZrangeGapSeconds() * 1000L);
         try {
             latch.await();
         } catch (InterruptedException e) {

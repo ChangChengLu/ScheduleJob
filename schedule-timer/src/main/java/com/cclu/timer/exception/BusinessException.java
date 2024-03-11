@@ -1,8 +1,8 @@
 package com.cclu.timer.exception;
 
 /**
- * 自定义异常类
- *
+ * @author ChangCheng Lu
+ * @description 自定义异常类
  */
 public class BusinessException extends RuntimeException {
 

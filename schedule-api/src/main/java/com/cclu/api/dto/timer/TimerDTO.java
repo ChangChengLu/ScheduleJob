@@ -1,6 +1,10 @@
 package com.cclu.api.dto.timer;
 
+/**
+ * @author ChangCheng Lu
+ */
 public class TimerDTO {
+
     /**
      * 定时任务ID
      */
@@ -29,7 +33,7 @@ public class TimerDTO {
     /**
      * Name 定时任务-回调参数配置
      */
-    private NotifyHTTPParam notifyHTTPParam;
+    private NotifyHttpParam notifyHttpParam;
 
     public Long getTimerId() {
         return timerId;
@@ -71,11 +75,23 @@ public class TimerDTO {
         this.cron = cron;
     }
 
-    public NotifyHTTPParam getNotifyHTTPParam() {
-        return notifyHTTPParam;
+    public NotifyHttpParam getNotifyHttpParam() {
+        return notifyHttpParam;
     }
 
-    public void setNotifyHTTPParam(NotifyHTTPParam notifyHTTPParam) {
-        this.notifyHTTPParam = notifyHTTPParam;
+    public void setNotifyHttpParam(NotifyHttpParam notifyHttpParam) {
+        this.notifyHttpParam = notifyHttpParam;
+    }
+
+    @Override
+    public String toString() {
+        return "TimerDTO{" +
+                "timerId=" + timerId +
+                ", app='" + app + '\'' +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", cron='" + cron + '\'' +
+                ", notifyHttpParam=" + notifyHttpParam +
+                '}';
     }
 }

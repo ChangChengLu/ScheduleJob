@@ -1,32 +1,55 @@
 package com.cclu.timer.model;
 
-import com.cclu.api.dto.timer.NotifyHTTPParam;
+import com.cclu.api.dto.timer.NotifyHttpParam;
 import com.cclu.api.dto.timer.TimerDTO;
 import com.cclu.common.model.BaseModel;
 import com.cclu.timer.utils.JSONUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 
+/**
+ * @author ChangCheng Lu
+ * @description 定时器
+ */
+@Getter
+@Setter
 public class TimerModel extends BaseModel implements Serializable {
 
+    /**
+     * 定时器ID
+     */
     private Long timerId;
 
+    /**
+     * 业务/应用标识
+     */
     private String app;
 
     private String name;
 
+    /**
+     * 定时器状态：
+     *  0-新建
+     *  1-激活
+     *  2-未激活
+     */
     private int status;
 
     private String cron;
 
-    private String notifyHTTPParam;
+    /**
+     * 回调上下文
+     */
+    private String notifyHttpParam;
 
     /**
      * 包装类转对象
      *
-     * @param timerDTO
-     * @return
+     * @param timerDTO timerDTO
+     * @return         TimerModel
      */
     public static TimerModel voToObj(TimerDTO timerDTO) {
         if (timerDTO == null) {
@@ -38,15 +61,15 @@ public class TimerModel extends BaseModel implements Serializable {
         timerModel.setName(timerDTO.getName());
         timerModel.setStatus(timerDTO.getStatus());
         timerModel.setCron(timerDTO.getCron());
-        timerModel.setNotifyHTTPParam(JSONUtil.toJsonString(timerDTO.getNotifyHTTPParam()));
+        timerModel.setNotifyHttpParam(JSONUtil.toJsonString(timerDTO.getNotifyHttpParam()));
         return timerModel;
     }
 
     /**
      * 对象转包装类
      *
-     * @param timerModel
-     * @return
+     * @param timerModel timerModel
+     * @return           TimerDTO
      */
     public static TimerDTO objToVo(TimerModel timerModel) {
         if (timerModel == null) {
@@ -59,58 +82,11 @@ public class TimerModel extends BaseModel implements Serializable {
         timerDTO.setStatus(timerModel.getStatus());
         timerDTO.setCron(timerModel.getCron());
 
-        NotifyHTTPParam httpParam = JSONUtil.parseObject(timerModel.getNotifyHTTPParam(),NotifyHTTPParam.class);
-        timerDTO.setNotifyHTTPParam(httpParam);
+        NotifyHttpParam httpParam = JSONUtil.parseObject(timerModel.getNotifyHttpParam(), NotifyHttpParam.class);
+        timerDTO.setNotifyHttpParam(httpParam);
 
         BeanUtils.copyProperties(timerModel, timerDTO);
         return timerDTO;
     }
 
-    public Long getTimerId() {
-        return timerId;
-    }
-
-    public void setTimerId(Long timerId) {
-        this.timerId = timerId;
-    }
-
-    public String getApp() {
-        return app;
-    }
-
-    public void setApp(String app) {
-        this.app = app;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public String getCron() {
-        return cron;
-    }
-
-    public void setCron(String cron) {
-        this.cron = cron;
-    }
-
-    public String getNotifyHTTPParam() {
-        return notifyHTTPParam;
-    }
-
-    public void setNotifyHTTPParam(String notifyHTTPParam) {
-        this.notifyHTTPParam = notifyHTTPParam;
-    }
 }

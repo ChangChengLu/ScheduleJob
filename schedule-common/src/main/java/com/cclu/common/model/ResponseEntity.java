@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * @author ChangCheng Lu
+ */
 public class ResponseEntity<T> implements Serializable {
 
     private int code;
@@ -92,7 +95,7 @@ public class ResponseEntity<T> implements Serializable {
     /**
      * 前端显示失败消息
      * @param msg 失败消息
-     * @return
+     * @return ResponseEntity
      */
     public static <T> ResponseEntity<T> showFailMsg(String msg) {
         ResponseEntity<T> serverResponseEntity = new ResponseEntity<>();

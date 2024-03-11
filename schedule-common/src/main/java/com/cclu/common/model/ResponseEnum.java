@@ -1,6 +1,13 @@
 package com.cclu.common.model;
 
+/**
+ * @author ChangCheng Lu
+ */
 public enum ResponseEnum {
+
+    /**
+     * 响应码
+     */
     OK(0, "ok"),
     FAIL(1, "fail"),
     /**

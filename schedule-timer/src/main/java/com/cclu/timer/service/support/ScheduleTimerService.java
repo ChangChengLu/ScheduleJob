@@ -1,9 +1,12 @@
-package com.cclu.timer.service;
+package com.cclu.timer.service.support;
 
 import com.cclu.api.dto.timer.TimerDTO;
 
 import java.util.List;
 
+/**
+ * @author ChangCheng Lu
+ */
 public interface ScheduleTimerService {
 
     Long createTimer(TimerDTO timerDTO);

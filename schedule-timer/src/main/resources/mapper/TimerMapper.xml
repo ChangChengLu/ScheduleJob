@@ -10,7 +10,7 @@
         <result column="name"  property="name"/>
         <result column="status"  property="status"/>
         <result column="cron"  property="cron"/>
-        <result column="notify_http_param"  property="notifyHTTPParam"/>
+        <result column="notify_http_param"  property="notifyHttpParam"/>
     </resultMap>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="timerModel.timerId">

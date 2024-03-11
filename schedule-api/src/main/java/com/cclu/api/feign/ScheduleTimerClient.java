@@ -7,7 +7,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(value = "schedule-timer",configuration = ContextFeignInterceptor.class)
+/**
+ * @author ChangCheng Lu
+ */
+@FeignClient(value = "schedule-timer", configuration = ContextFeignInterceptor.class)
 public interface ScheduleTimerClient {
 
     @PostMapping(value = "/createTimer")

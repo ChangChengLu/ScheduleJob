@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS `xtimer`;
+DROP TABLE IF EXISTS `schedule_timer`;
 CREATE TABLE `schedule_timer` (
           `timer_id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'TimerId',
           `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

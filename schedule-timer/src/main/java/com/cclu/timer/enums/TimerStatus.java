@@ -1,13 +1,22 @@
 package com.cclu.timer.enums;
 
+/**
+ * @author ChangCheng Lu
+ * @description 定时器状态
+ */
 public enum TimerStatus {
+    /**
+     * 1: 未激活
+     * 2: 激活
+     */
     Unable(1),
     Enable(2),;
 
-    private TimerStatus(int status) {
+    private final int status;
+
+    TimerStatus(int status) {
         this.status = status;
     }
-    private int status;
 
     public int getStatus() {
         return this.status;

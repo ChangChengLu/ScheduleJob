@@ -3,6 +3,9 @@ package com.cclu.common.model;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @author ChangCheng Lu
+ */
 public class BaseModel implements Serializable {
 
 	/**

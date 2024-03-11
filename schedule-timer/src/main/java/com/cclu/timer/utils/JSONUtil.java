@@ -11,6 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author ChangCheng Lu
+ * @description JSON工具类
+ */
 public class JSONUtil {
 
     private static final ObjectMapper mapper;
@@ -25,7 +29,9 @@ public class JSONUtil {
      * 序列化为JSON字符串
      */
     public static String toJsonString(Object obj) {
-        if (obj == null) return null;
+        if (obj == null) {
+            return null;
+        }
         String result = null;
         try {
             result = mapper.writeValueAsString(obj);
@@ -41,7 +47,9 @@ public class JSONUtil {
      * 反序列化为Object
      */
     public static <T> T parseObject(String jsonStr, Class<T> clazz) {
-        if (StringUtils.isBlank(jsonStr) || clazz == null) return null;
+        if (StringUtils.isBlank(jsonStr) || clazz == null) {
+            return null;
+        }
         T t = null;
         try {
             t = mapper.readValue(jsonStr, clazz);
@@ -57,7 +65,9 @@ public class JSONUtil {
      * 反序列化为List集合
      */
     public static <T> List<T> parseList(String listJsonStr, Class<T> clazz) {
-        if (StringUtils.isBlank(listJsonStr) || clazz == null) return Collections.emptyList();
+        if (StringUtils.isBlank(listJsonStr) || clazz == null) {
+            return Collections.emptyList();
+        }
         List<T> list = Collections.emptyList();
         try {
             list = mapper.readValue(listJsonStr, List.class);
@@ -73,7 +83,9 @@ public class JSONUtil {
      * 反序列化为Map集合
      */
     public static <K, V> Map<K, V> parseMap(String mapJsonStr, Class<K> kClazz, Class<V> vClazz) {
-        if (StringUtils.isBlank(mapJsonStr) || kClazz == null || vClazz == null) return Collections.emptyMap();
+        if (StringUtils.isBlank(mapJsonStr) || kClazz == null || vClazz == null) {
+            return Collections.emptyMap();
+        }
         Map<K, V> map = new HashMap<>();
         try {
             map = mapper.readValue(mapJsonStr, mapper.getTypeFactory().constructParametricType(Map.class, kClazz, vClazz));

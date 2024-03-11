@@ -1,22 +1,23 @@
 package com.cclu.timer.service.trigger;
 
-import com.cclu.common.redis.ReentrantDistributeLock;
 import com.cclu.timer.model.TaskModel;
 import com.cclu.timer.service.executor.ExecutorWorker;
 import com.cclu.timer.utils.TimerUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+
+/**
+ * @author ChangCheng Lu
+ * @description 触发器池子
+ */
 @Slf4j
 @Component
 public class TriggerPoolTask {
 
-    @Autowired
-    ReentrantDistributeLock reentrantDistributeLock;
-
-    @Autowired
+    @Resource
     ExecutorWorker executorWorker;
 
     @Async("triggerPool")
@@ -26,7 +27,7 @@ public class TriggerPoolTask {
         }
         log.info("start runExecutor");
 
-        executorWorker.work(TimerUtils.UnionTimerIDUnix(task.getTimerId(),task.getRunTimer()));
+        executorWorker.work(TimerUtils.unionTimerIdUnix(task.getTimerId(), task.getRunTimer()));
 
         log.info("end executeAsync");
     }
